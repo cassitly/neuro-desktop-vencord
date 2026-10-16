@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "vencord-discord",
+  "name": "Vencord viewer activity",
+  "version": "0.1.0",
+  "kind": "discord",
+  "permissions": [
+    {
+      "id": "discord.viewer",
+      "description": "Publish your locally selected server-channel view to your optional viewer overlay",
+      "required": true
+    }
+  ],
+  "settings_schema": {},
+  "game_ids": [],
+  "neuro_api": {}
+}

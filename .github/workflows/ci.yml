@@ -1,0 +1,56 @@
+name: Vencord adapter CI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  transport:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm test
+  vencord-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: adapter
+      - name: Checkout the reviewed upstream build target
+        uses: actions/checkout@v4
+        with:
+          repository: Vendicated/Vencord
+          ref: 32c90633ce6a95d7e56c95479efbb431bacf1eac
+          path: Vencord
+      - uses: pnpm/action-setup@v4
+        with:
+          version: "11.9.0"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: Vencord/pnpm-lock.yaml
+      - name: Install upstream's locked build dependencies
+        working-directory: Vencord
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Typecheck and build against actual upstream APIs
+        working-directory: adapter
+        env:
+          VENCORD_SOURCE: ${{ github.workspace }}/Vencord
+        run: npm run check:vencord
+      - name: Save the plugin source
+        uses: actions/upload-artifact@v4
+        with:
+          name: neuro-desktop-vencord-userplugin
+          path: |
+            adapter/plugin/
+            adapter/LICENSE
+            adapter/README.md
+            adapter/manifest.json
+          if-no-files-found: error
