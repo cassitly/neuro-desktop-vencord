@@ -1,6 +1,6 @@
 /*
- * Neuro Desktop Vencord integration
- * Copyright (c) 2026 Neuro Desktop contributors
+ * Neurcro Vencord integration
+ * Copyright (c) 2026 Neurcro contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 import { definePluginSettings } from "@api/Settings";
@@ -14,7 +14,7 @@ const logger = new Logger("NeuroDesktop");
 
 function report(error: unknown) {
     // The native layer returns only bounded, generic errors without token/body.
-    logger.warn(error instanceof Error ? error.message : "Local Neuro Desktop request failed");
+    logger.warn(error instanceof Error ? error.message : "Local Neurcro request failed");
 }
 
 function selection() {
@@ -33,7 +33,7 @@ function SharingSession() {
         React.createElement("p", null, "Only use the integration token for vencord-discord. This field clears after connecting; the token stays in native memory until disconnect or Discord exits."),
         React.createElement("input", {
             type: "password", value: token, autoComplete: "off", spellCheck: false,
-            "aria-label": "Neuro Desktop scoped integration token", placeholder: "Scoped integration token",
+            "aria-label": "Neurcro scoped integration token", placeholder: "Scoped integration token",
             onChange: (event: React.ChangeEvent<HTMLInputElement>) => setToken(event.target.value)
         }),
         React.createElement(Button, {
@@ -49,7 +49,7 @@ function SharingSession() {
                         includeChannelNames: settings.store.includeChannelNames,
                         actor: settings.store.actor as "neuro" | "evil"
                     });
-                    setMessage("Connected. Neuro Desktop must also allow this integration and viewer sharing.");
+                    setMessage("Connected. Neurcro must also allow this integration and viewer sharing.");
                     selection();
                 } catch {
                     setMessage("Connection failed. Check the local server, scoped token and integration grants.");
@@ -73,7 +73,7 @@ function SharingSession() {
 const settings = definePluginSettings({
     port: {
         type: OptionType.NUMBER, default: 8300,
-        description: "Local Neuro Desktop port at 127.0.0.1. Changing this disconnects the current session.",
+        description: "Local Neurcro port at 127.0.0.1. Changing this disconnects the current session.",
         isValid: value => typeof value === "number" && Number.isInteger(value) && value >= 1024 && value <= 65535,
         onChange: () => { void Native.disconnect().catch(report); }
     },
@@ -101,7 +101,7 @@ const settings = definePluginSettings({
 
 export default definePlugin({
     name: "NeuroDesktop",
-    description: "Share a curated view of your selected Discord server channel with your local Neuro Desktop overlay, when you opt in.",
+    description: "Share a curated view of your selected Discord server channel with your local Neurcro overlay, when you opt in.",
     // No Discord identity is attributed to this project. Set your own author ID
     // when maintaining a private Vencord build.
     authors: [],

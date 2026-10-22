@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later
- * Copyright (c) 2026 Neuro Desktop contributors
+ * Copyright (c) 2026 Neurcro contributors
  */
 import http from "node:http";
 
@@ -11,7 +11,7 @@ const ACTORS = new Set(["neuro", "evil"]);
 
 export function validatePort(port) {
     if (!Number.isInteger(port) || port < 1024 || port > 65535)
-        throw new TypeError("Neuro Desktop port must be an integer between 1024 and 65535");
+        throw new TypeError("Neurcro port must be an integer between 1024 and 65535");
     return port;
 }
 
@@ -33,7 +33,7 @@ function validateOptions(options) {
     const { port, token, sharing, includeChannelNames, actor } = options;
     validatePort(port);
     if (typeof token !== "string" || !TOKEN.test(token))
-        throw new TypeError("Use the scoped integration token from Neuro Desktop");
+        throw new TypeError("Use the scoped integration token from Neurcro");
     if (typeof sharing !== "boolean" || typeof includeChannelNames !== "boolean" || !ACTORS.has(actor))
         throw new TypeError("Invalid sharing settings");
     return { port, token, sharing, includeChannelNames, actor };
@@ -42,7 +42,7 @@ function validateOptions(options) {
 function request(port, token, endpoint, body) {
     // endpoint is chosen only by this module, never by the renderer or IPC.
     if (!["heartbeat", "activity", "hide"].includes(endpoint))
-        throw new TypeError("Unsupported Neuro Desktop endpoint");
+        throw new TypeError("Unsupported Neurcro endpoint");
     const data = Buffer.from(JSON.stringify(body), "utf8");
     if (data.length > 4096) throw new TypeError("Activity exceeds the local request limit");
     return new Promise((resolve, reject) => {
@@ -69,15 +69,15 @@ function request(port, token, endpoint, body) {
             response.on("data", chunk => {
                 size += chunk.length;
                 if (size > MAX_RESPONSE) {
-                    finish(new Error("Neuro Desktop response exceeded 256 KiB"));
+                    finish(new Error("Neurcro response exceeded 256 KiB"));
                     response.destroy();
                     req.destroy();
                 } else chunks.push(chunk);
             });
-            response.on("error", () => finish(new Error("Neuro Desktop response was interrupted")));
+            response.on("error", () => finish(new Error("Neurcro response was interrupted")));
             response.on("end", () => {
                 if (response.statusCode < 200 || response.statusCode >= 300) {
-                    finish(new Error(`Neuro Desktop denied the request (HTTP ${response.statusCode}); check grants and visibility`));
+                    finish(new Error(`Neurcro denied the request (HTTP ${response.statusCode}); check grants and visibility`));
                     return;
                 }
                 try {
@@ -85,15 +85,15 @@ function request(port, token, endpoint, body) {
                     if (!result || typeof result !== "object" || Array.isArray(result)) throw new Error();
                     finish(null, result);
                 } catch {
-                    finish(new Error("Neuro Desktop returned invalid JSON"));
+                    finish(new Error("Neurcro returned invalid JSON"));
                 }
             });
         });
-        req.on("error", () => finish(new Error("Cannot reach the local Neuro Desktop server")));
+        req.on("error", () => finish(new Error("Cannot reach the local Neurcro server")));
         // Node's socket timeout alone can be prolonged by a trickling response.
         // Use one deadline for the complete request instead.
         timer = setTimeout(() => {
-            finish(new Error("Local Neuro Desktop request timed out"));
+            finish(new Error("Local Neurcro request timed out"));
             req.destroy();
         }, TIMEOUT_MS);
         timer.unref?.();

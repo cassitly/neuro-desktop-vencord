@@ -1,6 +1,6 @@
 /*
- * Neuro Desktop Vencord integration
- * Copyright (c) 2026 Neuro Desktop contributors
+ * Neurcro Vencord integration
+ * Copyright (c) 2026 Neurcro contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 import { type Bridge, type ConnectionOptions, createBridge, type Selection } from "./transport.mjs";
